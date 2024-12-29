@@ -2,26 +2,30 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Grid, Card, CardMedia, CardContent, Typography, CardActions, Button, CircularProgress, Alert } from "@mui/material";
 
-function News() {
-  const url = `https://newsdata.io/api/1/latest?apikey=pub_62221c4ad3a88df018881345d778efb8d5137&category=politics&country=in`;
+function News({ category }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const url = `https://newsdata.io/api/1/latest?apikey=pub_62221c4ad3a88df018881345d778efb8d5137&category=${category}&country=in`;
 
   async function getNewsData() {
     try {
       const response = await axios.get(url);
       setData(response.data.results);
+      setError(null);
     } catch (error) {
       setError(error.message);
+      setData(null);
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
+    setLoading(true); // Set loading to true when the category changes
     getNewsData();
-  }, []);
+  }, [category]); // Re-fetch data whenever `category` changes
 
   if (loading)
     return (
